@@ -29,7 +29,7 @@ namespace safra {
        * Implement superclass methods
        */
       virtual void create_representation(std::ostream& stream);
-      friend std::ostream& operator<< (std::ostream& stream, const Rabin rab);
+      friend std::ostream& operator<< (std::ostream& stream, const Rabin& rab);
 
   };
 
