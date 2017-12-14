@@ -29,6 +29,10 @@ namespace safra {
     num_states = std::stoi(read_line_ignore_comments(in));
     // Alphabet size
     alphabet_size = std::stoi(read_line_ignore_comments(in));
+    if (use_letters && alphabet_size > 26) {
+      std::cerr << "Alphabet size is greater than 26 but use letters was provided" << std::endl;
+      throw -1;
+    }
     // Number of transitiions
     // NOTE: 1 indexed
     // state * letter -> state
