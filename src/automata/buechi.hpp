@@ -39,19 +39,19 @@ namespace safra {
 
     private:
       // Helper methods to convert to rabin
-      SafraTree compute_transition(const SafraTree& tree, int letter);
+      SafraTree compute_transition(const SafraTree& tree, int letter) const;
       // Step 1) Remove marks
-      SafraTree copy_and_remove_marks(const SafraTree& tree);
+      SafraTree copy_and_remove_marks(const SafraTree& tree) const ;
       // Step 2) Branch accepting
-      void branch_accept(SafraTree& tree);
+      void branch_accept(SafraTree& tree) const;
       // Step 3) Powerset construction
-      void pset_const(SafraTree& tree, int letter);
+      void pset_const(SafraTree& tree, int letter) const;
       // Step 4) Horizontal merge
-      void horizontal_merge(SafraTree& tree);
+      void horizontal_merge(SafraTree& tree) const;
       // Step 5) Remove empty
-      void remove_empty(SafraTree& tree);
+      void remove_empty(SafraTree& tree) const;
       // Step 6) Vertical merge
-      void vertical_merge(SafraTree& tree);
+      void vertical_merge(SafraTree& tree) const;
 
   };
 

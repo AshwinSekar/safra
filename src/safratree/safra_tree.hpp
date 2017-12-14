@@ -19,7 +19,7 @@ namespace safra {
 
       bool is_valid() const;
 
-      int find_name(int n) { return root.find_name(n); }
+      int find_name(int n) const { return root.find_name(n); }
 
       friend bool operator== (const SafraTree &o1, const SafraTree &o2);
       friend bool operator!= (const SafraTree &o1, const SafraTree &o2) {
