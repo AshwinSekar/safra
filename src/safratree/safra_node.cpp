@@ -39,12 +39,12 @@ namespace safra {
   int SafraNode::find_name(int n) const {
     if (n == name && mark) {
       return 1;
-    } 
+    }
     if (n == name) {
       return 0;
     }
 
-    int status; 
+    int status;
     for (auto child : children) {
       status = child.find_name(n);
       if (status > 0) return status;
