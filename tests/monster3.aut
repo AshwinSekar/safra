@@ -1,0 +1,23 @@
+BUECHI
+# Rabin size: 14
+# Rabin transitions: 28
+# Number of states
+3
+# Alphabet size
+2
+# Number of transitions
+7
+# begin transitions
+1  1  1
+1  1  2
+1  2  1
+2  1  1
+2  2  3
+3  1  3
+3  2  3
+# end transitions
+# Buechi initial
+2 
+# Buechi final
+2 
+# Buechi eof
