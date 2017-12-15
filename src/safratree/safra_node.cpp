@@ -8,7 +8,7 @@ namespace safra {
   bool SafraNode::is_valid() const {
     // No empty nodes
     if (label.size() == 0) {
-      std::cout << "Empty nodes" << std::endl;
+      std::cerr << "Empty nodes" << std::endl;
       return false;
     }
 
@@ -25,25 +25,20 @@ namespace safra {
       // Children labels must be subset of label
       if (!std::includes(label.begin(), label.end(),
             child.label.begin(), child.label.end())) {
-        std::cout << "Child is not subset" << std::endl;
-        return false;
-      }
-      // Children must be older than current node
-      if (child.name <= name) {
-        std::cout << "Child are too young" << std::endl;
+        std::cerr << "Child is not subset" << std::endl;
         return false;
       }
     }
 
     // Children labels must be disjoint (Horizontal Merge)
     if (total_child_elems != child_union.size()) {
-      std::cout << "Child labels not disjoint" << std::endl;
+      std::cerr << "Child labels not disjoint" << std::endl;
       return false;
     }
 
     // Children labels cannot form a partition of label (Vertical Merge)
     if (total_child_elems == label.size()) {
-      std::cout << "Child labels forming partition" << std::endl;
+      std::cerr << "Child labels forming partition" << std::endl;
     }
     return total_child_elems != label.size();
   }

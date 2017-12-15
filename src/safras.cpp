@@ -65,10 +65,10 @@ namespace safra {
         std::inserter(diff, diff.begin()));
     node.label = diff;
 
-    // Reset the set when going to children
-    std::set<int> child_brothers;
+    // The paper seems to indicate that we should reset the set when going to children
+    // But this breaks the invariant so we reuse the same one
     for (auto child = node.children.begin(); child != node.children.end(); ++child) {
-      horizontal_merge(*child, child_brothers);
+      horizontal_merge(*child, brothers);
     }
 
     // Add our label to what has been seen by the older brothers
@@ -124,38 +124,24 @@ namespace safra {
 
 
   SafraTree Buechi::compute_transition(const SafraTree& tree, int letter) const {
-    assert(tree.is_valid());
+    //assert(tree.is_valid());
 
     if (tree.root.name == -1)
       return tree;
 
     // 6 steps
-    // std::cout << "---------------INITIAL------------" << std::endl;
-    // std::cout << tree << std::endl;
     SafraTree next(num_states);
     next.names = tree.names;
+
     next.root = copy_and_remove_marks(tree.root);
-    // std::cout << "copy and remove marks" << std::endl;
-    // std::cout << next << std::endl;
     branch_accept(next, next.root);
-    // std::cout << "branch accept" << std::endl;
-    // std::cout << next << std::endl;
     pset_const(next.root, letter);
-    // std::cout << "pset constr" << std::endl;
-    // std::cout << next << std::endl;
     std::set<int> brothers;
     horizontal_merge(next.root, brothers);
-    // std::cout << "horizontal merge" << std::endl;
-    // std::cout << next << std::endl;
     remove_empty(next, next.root);
-    // std::cout << "remove empty" << std::endl;
-    // std::cout << next << std::endl;
     vertical_merge(next, next.root);
-    // std::cout << "vertical merge" << std::endl;
-    // std::cout << next << std::endl;
 
-    assert(next.is_valid());
-    // std::cout << "-----------------------------------" << std::endl;
+    //assert(next.is_valid());
     return next;
   }
 
@@ -177,7 +163,6 @@ namespace safra {
     while (!to_explore.empty()) {
       SafraTree tree = to_explore.front();
       for (int l = 0; l < alphabet_size; l++) {
-        // std::cout << "Computing " << states[tree] << " transition with " << l << std::endl;
         SafraTree next = compute_transition(tree, l);
         if (states.find(next) == states.end()) {
           // New state!
@@ -189,13 +174,6 @@ namespace safra {
       }
       to_explore.pop();
     }
-
-    std::cout << "States: " << states.size() << std::endl;
-    std::cout << "Transitions: " << rab.transitions.size() << std::endl;
-    /*for (auto state : states) {
-      std::cout << "q" << state.second << std::endl;
-      std::cout << state.first << std::endl;
-    }*/
 
     // Acceptance criteria
     // Check which states have names 0 to 2n marked / unmarked

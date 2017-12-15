@@ -9,7 +9,6 @@ namespace safra {
       names.push_back(false);
     }
     root.name = -1;
-    assert(is_valid());
   }
 
   SafraTree::SafraTree(const Buechi& buechi) {
@@ -22,12 +21,10 @@ namespace safra {
     root.mark = false;//(buechi.start_states == buechi.accept_states);
     // Create label with initial (start states)
     root.label.insert(buechi.start_states.begin(), buechi.start_states.end());
-    assert(is_valid());
   }
 
   bool SafraTree::is_valid() const {
     if (root.name == -1) {
-      std::cout << "Entire tree is null" << std::endl;
       return true;
     }
     return (root.name == 0) && root.is_valid();
