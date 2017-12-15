@@ -2,7 +2,7 @@ Safra's Determinization Algorithm
 ===================
 An implementation of Safra's Determinization Algorithm specifically for converting Buechi Automata to Rabin Automata
 
-#Documentation
+# Documentation
 The automata directory contains the Buechi, Rabin, and generalized Automata types. These files also contain
 handy methods for visualizing the machines in plain text, graphviz dot format, or pdf. 
 Note: pdf conversion may be slow for very large automata.
@@ -51,15 +51,15 @@ Rabin r = b.to_rabin();
 My implementation was able to achieve reasonable speed and accuracy. I was unable to generate the optimal Rabin machine, but in most cases it is pretty close. For verification hand verification was performed on all the smaller tests, but no verification was attempted for the larger tests.
 
 Here is a breakdown over the most challenging tests
-###Accuracy and Efficiency
-Test     | Rabin States | Rabin Transitions | % more states than optimal| %more transitions than optimal | Runtime (s)|
+### Accuracy and Efficiency
+| Test     | Rabin States | Rabin Transitions | % more states than optimal| %more transitions than optimal | Runtime (s)|
 -------- | :-----------:|:-----------------:|-----------------------------------------:|----------:|------:|
-littlemonster3 | 21 | 63 | 57%| 57% | 0.004|
-littlemonster4 | 257 | 1028 | 49% | 49% | 0.022|
-littlemonster5 | 10000 | ??? | 33% | ??? | 1.472|
-monster3 | 14 | 28 | 35% | 35% | 0.002 |
-monster4 | 183 | 549 | 14% | 14% | 0.015 |
-monster5 | 7108 | 28432 | 1% | 1% | 0.668 |
+| littlemonster3 | 21 | 63 | 57%| 57% | 0.004|
+| littlemonster4 | 257 | 1028 | 49% | 49% | 0.022|
+| littlemonster5 | 10000 | ??? | 33% | ??? | 1.472|
+| monster3 | 14 | 28 | 35% | 35% | 0.002 |
+| monster4 | 183 | 549 | 14% | 14% | 0.015 |
+| monster5 | 7108 | 28432 | 1% | 1% | 0.668 |
 
 The tests were run on an Intel I7 4 core processor with 8GB of RAM.
 
