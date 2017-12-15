@@ -20,6 +20,9 @@ namespace safra {
       // Acceptance criteria (accept states)
       std::set<int> accept_states;
 
+
+      Buechi() {};
+
       /**
        * Reads the Buechi Automata from a file
        */
