@@ -41,17 +41,17 @@ namespace safra {
       // Helper methods to convert to rabin
       SafraTree compute_transition(const SafraTree& tree, int letter) const;
       // Step 1) Remove marks
-      SafraTree copy_and_remove_marks(const SafraTree& tree) const ;
+      SafraNode copy_and_remove_marks(const SafraNode& tree) const ;
       // Step 2) Branch accepting
-      void branch_accept(SafraTree& tree) const;
+      void branch_accept(SafraTree& tree, SafraNode& node) const;
       // Step 3) Powerset construction
-      void pset_const(SafraTree& tree, int letter) const;
+      void pset_const(SafraNode& node, int letter) const;
       // Step 4) Horizontal merge
-      void horizontal_merge(SafraTree& tree) const;
+      void horizontal_merge(SafraNode& node, std::set<int>& brothers) const;
       // Step 5) Remove empty
-      void remove_empty(SafraTree& tree) const;
+      void remove_empty(SafraTree& tree, SafraNode& node) const;
       // Step 6) Vertical merge
-      void vertical_merge(SafraTree& tree) const;
+      void vertical_merge(SafraTree& tree, SafraNode& node) const;
 
   };
 

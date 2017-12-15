@@ -102,7 +102,13 @@ int main(int argc, char* argv[]) {
 
   if (parse_args(&opts, argc, argv)) {
     safra::Buechi buechi(opts.input_filename, opts.use_letters);
-    safra::Rabin rab(opts.use_letters);
+    std::cout << "INITIAL {";
+    for (int s : buechi.start_states) std::cout << s << ", ";
+    std::cout << "}" << std::endl;
+    std::cout << "ACCEPT {";
+    for (int s : buechi.accept_states) std::cout << s << ", ";
+    std::cout << "}" << std::endl;
+    safra::Rabin rab = buechi.to_rabin();
 
     std::streambuf* buf;
     std::ofstream of;

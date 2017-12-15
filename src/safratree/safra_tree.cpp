@@ -13,22 +13,28 @@ namespace safra {
   }
 
   SafraTree::SafraTree(const Buechi& buechi) {
-    SafraTree(buechi.num_states);
+    for(int i = 0; i < buechi.num_states * 2; i++) {
+      names.push_back(false);
+    }
     root.name = 0;
+    names[0] = true;
     // By Vertical merge
-    root.mark = (buechi.start_states == buechi.accept_states);
+    root.mark = false;//(buechi.start_states == buechi.accept_states);
     // Create label with initial (start states)
     root.label.insert(buechi.start_states.begin(), buechi.start_states.end());
     assert(is_valid());
   }
 
   bool SafraTree::is_valid() const {
-    if (root.name == -1) return true;
+    if (root.name == -1) {
+      std::cout << "Entire tree is null" << std::endl;
+      return true;
+    }
     return (root.name == 0) && root.is_valid();
   }
 
   int SafraTree::next_name() {
-    int i;
+    unsigned int i;
     for (i = 0; i < names.size(); i++) {
       if (!names[i]) break;
     }
@@ -54,7 +60,7 @@ namespace safra {
   }
 
   std::ostream& operator<< (std::ostream& stream, const SafraTree& tree) {
-    stream << "[Names]" << std::endl;
+    stream << "[Names] size " << tree.names.size() << std::endl;
     for (bool b : tree.names) {
       stream << b << " ";
     }

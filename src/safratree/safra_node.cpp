@@ -6,33 +6,45 @@
 namespace safra {
 
   bool SafraNode::is_valid() const {
-    // No emtpy nodes
-    if (label.size() == 0)
+    // No empty nodes
+    if (label.size() == 0) {
+      std::cout << "Empty nodes" << std::endl;
       return false;
+    }
 
     std::set<int> child_union;
-    int total_child_elems;
+    unsigned int total_child_elems = 0;
 
     for (auto child : children) {
       // Children must be valid nodes
-      if (!child.is_valid())
+      if (!child.is_valid()) {
         return false;
+      }
       child_union.insert(child.label.begin(), child.label.end());
       total_child_elems += child.label.size();
       // Children labels must be subset of label
-      if (!std::includes(child.label.begin(), child.label.end(),
-            label.begin(), label.end()))
+      if (!std::includes(label.begin(), label.end(),
+            child.label.begin(), child.label.end())) {
+        std::cout << "Child is not subset" << std::endl;
         return false;
+      }
       // Children must be older than current node
-      if (child.name <= name)
+      if (child.name <= name) {
+        std::cout << "Child are too young" << std::endl;
         return false;
+      }
     }
 
     // Children labels must be disjoint (Horizontal Merge)
-    if (total_child_elems != child_union.size())
+    if (total_child_elems != child_union.size()) {
+      std::cout << "Child labels not disjoint" << std::endl;
       return false;
+    }
 
     // Children labels cannot form a partition of label (Vertical Merge)
+    if (total_child_elems == label.size()) {
+      std::cout << "Child labels forming partition" << std::endl;
+    }
     return total_child_elems != label.size();
   }
 
@@ -47,7 +59,7 @@ namespace safra {
     int status;
     for (auto child : children) {
       status = child.find_name(n);
-      if (status > 0) return status;
+      if (status >= 0) return status;
     }
     return -1;
   }
@@ -66,6 +78,8 @@ namespace safra {
     stream << " {";
     for (auto l : node.label) stream << l << ", ";
     stream << "}" << std::endl;
+
+    return stream;
   }
 
 }

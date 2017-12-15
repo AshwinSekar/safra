@@ -9,34 +9,119 @@
 
 #include <assert.h>
 #include <unordered_map>
+#include <set>
+#include <algorithm>
 #include <queue>
 
 namespace safra {
 
-  SafraTree Buechi::copy_and_remove_marks(const SafraTree& tree) const {
-    SafraTree next(num_states);
-    return next;
+  SafraNode Buechi::copy_and_remove_marks(const SafraNode& node) const {
+    // Deep copy and set all marks to false
+    SafraNode new_node(node.name, false);
+    new_node.label = node.label;
+    for (auto child : node.children) {
+      new_node.children.push_back(copy_and_remove_marks(child));
+    }
+    return new_node;
   }
 
-  void Buechi::branch_accept(SafraTree& tree) const {
+  void Buechi::branch_accept(SafraTree& tree, SafraNode& node) const {
+    // If any label has accepting states in it, branch a new child
+    for (auto child = node.children.begin(); child != node.children.end(); ++child) {
+      branch_accept(tree, *child);
+    }
+
+    std::set<int> common;
+    std::set_intersection(node.label.begin(), node.label.end(),
+        accept_states.begin(), accept_states.end(),
+        std::inserter(common, common.begin()));
+    if (common.size() > 0) {
+      SafraNode new_child(tree.next_name(), false);
+      new_child.label = common;
+      node.children.push_back(new_child);
+    }
+  }
+
+  void Buechi::pset_const(SafraNode& node, int letter) const {
+    // Transition all the labels
+    std::set<int> new_label;
+    for (int l : node.label) {
+      auto trans_states = transitions.equal_range(std::pair<int, int>(l, letter));
+      for (auto state = trans_states.first; state != trans_states.second; ++state) {
+        new_label.insert(state->second);
+      }
+    }
+    node.label = new_label;
+
+    for (auto child = node.children.begin(); child != node.children.end(); ++child)
+      pset_const(*child, letter);
+  }
+
+  void Buechi::horizontal_merge(SafraNode& node, std::set<int>& brothers) const {
+    // Remove nodes that have been seen by older brothers
+    std::set<int> diff;
+    std::set_difference(node.label.begin(), node.label.end(),
+        brothers.begin(), brothers.end(),
+        std::inserter(diff, diff.begin()));
+    node.label = diff;
+
+    // Reset the set when going to children
+    std::set<int> child_brothers;
+    for (auto child = node.children.begin(); child != node.children.end(); ++child) {
+      horizontal_merge(*child, child_brothers);
+    }
+
+    // Add our label to what has been seen by the older brothers
+    brothers.insert(node.label.begin(), node.label.end());
+  }
+
+  void Buechi::remove_empty(SafraTree& tree, SafraNode& node) const {
+    if (node.label.empty()) {
+      // This only happens for the root node
+      tree.remove_names(node);
+      node.children.clear();
+      node.name = -1;
+    }
+
+    std::vector<SafraNode> new_children;
+    for (auto child = node.children.begin(); child != node.children.end(); ++child) {
+      if (child->label.empty()) {
+        tree.remove_names(*child);
+      } else {
+        remove_empty(tree, *child);
+        new_children.push_back(*child);
+      }
+    }
+
+    node.children = new_children;
+  }
+
+  void Buechi::vertical_merge(SafraTree& tree, SafraNode& node) const {
+    // Check to see if any states are the union of their children,
+    // remove if that's the case
+    std::set<int> child_union;
+    for (auto child : node.children) {
+      child_union.insert(child.label.begin(), child.label.end());
+    }
+
+    // Here we only have to compare sizes because by is_valid we are
+    // guarenteed that the children are subsets
+    if (child_union.size() == node.label.size()) {
+      // Deep delete all the children
+      for (auto child : node.children) {
+        tree.remove_names(child);
+      }
+      node.children.clear();
+      node.mark = true;
+    } else {
+      // We vertical merge the children
+      for (auto child = node.children.begin(); child != node.children.end(); ++child) {
+        vertical_merge(tree, *child);
+      }
+    }
 
   }
 
-  void Buechi::pset_const(SafraTree& tree, int letter) const {
-
-  }
-
-  void Buechi::horizontal_merge(SafraTree& tree) const {
-
-  }
-
-  void Buechi::remove_empty(SafraTree& tree) const {
-
-  }
-
-  void Buechi::vertical_merge(SafraTree& tree) const {
-
-  }
 
   SafraTree Buechi::compute_transition(const SafraTree& tree, int letter) const {
     assert(tree.is_valid());
@@ -45,16 +130,35 @@ namespace safra {
       return tree;
 
     // 6 steps
-    SafraTree next = copy_and_remove_marks(tree);
-    branch_accept(next);
-    pset_const(next, letter);
-    horizontal_merge(next);
-    remove_empty(next);
-    vertical_merge(next);
+    // std::cout << "---------------INITIAL------------" << std::endl;
+    // std::cout << tree << std::endl;
+    SafraTree next(num_states);
+    next.names = tree.names;
+    next.root = copy_and_remove_marks(tree.root);
+    // std::cout << "copy and remove marks" << std::endl;
+    // std::cout << next << std::endl;
+    branch_accept(next, next.root);
+    // std::cout << "branch accept" << std::endl;
+    // std::cout << next << std::endl;
+    pset_const(next.root, letter);
+    // std::cout << "pset constr" << std::endl;
+    // std::cout << next << std::endl;
+    std::set<int> brothers;
+    horizontal_merge(next.root, brothers);
+    // std::cout << "horizontal merge" << std::endl;
+    // std::cout << next << std::endl;
+    remove_empty(next, next.root);
+    // std::cout << "remove empty" << std::endl;
+    // std::cout << next << std::endl;
+    vertical_merge(next, next.root);
+    // std::cout << "vertical merge" << std::endl;
+    // std::cout << next << std::endl;
 
     assert(next.is_valid());
+    // std::cout << "-----------------------------------" << std::endl;
     return next;
   }
+
 
   Rabin Buechi::to_rabin() const {
     std::unordered_map<SafraTree, int> states;
@@ -73,6 +177,7 @@ namespace safra {
     while (!to_explore.empty()) {
       SafraTree tree = to_explore.front();
       for (int l = 0; l < alphabet_size; l++) {
+        // std::cout << "Computing " << states[tree] << " transition with " << l << std::endl;
         SafraTree next = compute_transition(tree, l);
         if (states.find(next) == states.end()) {
           // New state!
@@ -85,6 +190,13 @@ namespace safra {
       to_explore.pop();
     }
 
+    std::cout << "States: " << states.size() << std::endl;
+    std::cout << "Transitions: " << rab.transitions.size() << std::endl;
+    /*for (auto state : states) {
+      std::cout << "q" << state.second << std::endl;
+      std::cout << state.first << std::endl;
+    }*/
+
     // Acceptance criteria
     // Check which states have names 0 to 2n marked / unmarked
     for (int i = 0; i < num_states * 2; i++) {
@@ -94,7 +206,7 @@ namespace safra {
         if (status == 1) {
           // Positive condition
           pair.second.insert(state.second);
-        } else if (status == 0) {
+        } else if (status == -1) {
           // Negative condition
           pair.first.insert(state.second);
         }

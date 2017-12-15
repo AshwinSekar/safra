@@ -21,17 +21,17 @@ namespace safra {
 
       int find_name(int n) const { return root.find_name(n); }
 
+      // Get the next smallest unused name and mark it used
+      int next_name();
+      // Mark node and childrens names as unused
+      void remove_names(SafraNode& node);
+
       friend bool operator== (const SafraTree &o1, const SafraTree &o2);
       friend bool operator!= (const SafraTree &o1, const SafraTree &o2) {
         return !(o1 == o2);
       }
 
       friend std::ostream& operator<< (std::ostream& stream, const SafraTree& tree);
-    private:
-      // Get the next smallest unused name and mark it used
-      int next_name();
-      // Mark node and childrens names as unused
-      void remove_names(SafraNode& node);
   };
 
 }

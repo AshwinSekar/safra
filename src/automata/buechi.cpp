@@ -60,7 +60,7 @@ namespace safra {
     // Final (accept states)
     // NOTE: 1 indexed
     std::string final_line = read_line_ignore_comments(in);
-    line_tok = strtok(strdup(initial_line.c_str()), " ");
+    line_tok = strtok(strdup(final_line.c_str()), " ");
     while(line_tok) {
       accept_states.emplace(atoi(line_tok) - 1);
       line_tok = strtok(NULL, " ");
