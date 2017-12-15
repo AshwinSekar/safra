@@ -18,7 +18,7 @@ namespace safra {
     root.name = 0;
     names[0] = true;
     // By Vertical merge
-    root.mark = false;//(buechi.start_states == buechi.accept_states);
+    root.mark = false;
     // Create label with initial (start states)
     root.label.insert(buechi.start_states.begin(), buechi.start_states.end());
   }
